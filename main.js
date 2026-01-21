@@ -1,3 +1,5 @@
+import './style.css'
+
 const scanButton = document.getElementById("scanButton");
 const statusIcon = document.getElementById("statusIcon");
 const logElement = document.getElementById("log");
