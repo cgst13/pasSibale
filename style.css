@@ -7,6 +7,7 @@
   --card-bg: #ffffff;
   --text-main: #1f2937;
   --text-muted: #6b7280;
+  --border-color: #e5e7eb;
   --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
@@ -137,6 +138,23 @@ p.subtitle {
   cursor: not-allowed;
 }
 
+.btn-secondary {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+}
+
 /* Log / Result Area */
 #log {
   margin-top: 24px;
@@ -152,6 +170,61 @@ p.subtitle {
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+/* Registration Form */
+.registration-form {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+/* User List */
+.user-list {
+  margin-top: 24px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.delete-btn {
+  color: var(--error-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 4px 8px;
 }
 
 .hidden {
