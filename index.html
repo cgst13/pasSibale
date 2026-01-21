@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/pasSibale/assets/index-CaGuM0xW.js"></script>
-    <link rel="stylesheet" crossorigin href="/pasSibale/assets/index-BvYMMgmE.css">
+    <script type="module" crossorigin src="/pasSibale/assets/index-BD3M2bQa.js"></script>
+    <link rel="stylesheet" crossorigin href="/pasSibale/assets/index-DfZ6T28M.css">
   </head>
   <body>
     <div class="container">
@@ -28,6 +28,21 @@
       </button>
 
       <div id="log" class="hidden"></div>
+
+      <!-- Registration Form (Hidden by default) -->
+      <div id="registerSection" class="registration-form hidden">
+        <input type="text" id="nameInput" class="input-field" placeholder="Enter User Name" />
+        <button id="saveButton" class="btn-primary">Save User</button>
+        <button id="cancelButton" class="btn-secondary">Cancel</button>
+      </div>
+
+      <!-- Manage Users Toggle -->
+      <button id="toggleUsersBtn" class="btn-secondary" style="margin-top: 24px;">Manage Registered Users</button>
+
+      <!-- User List -->
+      <div id="userListSection" class="user-list hidden">
+        <!-- Users will be injected here -->
+      </div>
     </div>
 
   </body>
