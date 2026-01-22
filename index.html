@@ -1,49 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>NFC Reader</title>
-    <!-- Google Fonts for Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/pasSibale/assets/index-BD3M2bQa.js"></script>
-    <link rel="stylesheet" crossorigin href="/pasSibale/assets/index-DfZ6T28M.css">
-  </head>
-  <body>
-    <div class="container">
-      <h1>NFC Access</h1>
-      <p class="subtitle">Tap "Start Scan" and hold your card near the back of your device.</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NFC Access Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/pasSibale/assets/index-DX3aCT3E.js"></script>
+  <link rel="stylesheet" crossorigin href="/pasSibale/assets/index-ytMQT_KK.css">
+</head>
+<body>
 
+  <!-- App Header -->
+  <header class="app-bar">
+    <h1>NFC Access Control</h1>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Status Card -->
+    <div class="card status-card">
       <div class="status-icon" id="statusIcon">
-        <!-- Default Icon (NFC Signal) -->
+        <!-- Default Icon (Signal) -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 19.5v-.75a7.5 7.5 0 00-7.5-7.5H4.5m0-6.75h.75c7.87 0 14.25 6.38 14.25 14.25v.75M6 18.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
         </svg>
       </div>
+      <div id="log" class="status-message">Initializing...</div>
+      <div class="status-subtext">Tap card to scan</div>
+    </div>
 
-      <button id="scanButton" class="btn-primary">
-        <span>Start Scan</span>
-      </button>
-
-      <div id="log" class="hidden"></div>
-
-      <!-- Registration Form (Hidden by default) -->
-      <div id="registerSection" class="registration-form hidden">
-        <input type="text" id="nameInput" class="input-field" placeholder="Enter User Name" />
-        <button id="saveButton" class="btn-primary">Save User</button>
-        <button id="cancelButton" class="btn-secondary">Cancel</button>
-      </div>
-
-      <!-- Manage Users Toggle -->
-      <button id="toggleUsersBtn" class="btn-secondary" style="margin-top: 24px;">Manage Registered Users</button>
-
-      <!-- User List -->
-      <div id="userListSection" class="user-list hidden">
-        <!-- Users will be injected here -->
+    <!-- Location Selector -->
+    <div class="card">
+      <div class="form-group">
+        <label for="locationSelect" class="form-label">Current Station</label>
+        <select id="locationSelect" class="input-field">
+          <option value="Main Gate">Main Gate</option>
+          <option value="Back Entrance">Back Entrance</option>
+          <option value="Office Lobby">Office Lobby</option>
+          <option value="Warehouse">Warehouse</option>
+        </select>
       </div>
     </div>
+
+    <!-- Registration Section (Hidden by default) -->
+    <div id="registerSection" class="card hidden">
+      <h3 class="form-label" style="font-size: 1rem; margin-bottom: 12px; color: var(--text-main);">New Card Detected</h3>
+      
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="nameInput" class="input-field" placeholder="e.g. John Doe" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Position</label>
+        <input type="text" id="positionInput" class="input-field" placeholder="e.g. Manager" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <input type="text" id="departmentInput" class="input-field" placeholder="e.g. IT" />
+      </div>
+
+      <div class="btn-group">
+        <button id="cancelButton" class="btn btn-secondary">Cancel</button>
+        <button id="saveButton" class="btn btn-primary">Save User</button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="btn-group">
+      <button id="toggleUsersBtn" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Users
+      </button>
+      <button id="toggleHistoryBtn" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+        History
+      </button>
+    </div>
+
+    <!-- User List Section -->
+    <div id="userListSection" class="card hidden list-container" style="padding: 0; overflow: hidden;">
+        <!-- User items will be injected here -->
+    </div>
+
+    <!-- History Section -->
+    <div id="historySection" class="hidden">
+      <div class="card" style="margin-bottom: 12px; padding: 12px;">
+         <div class="filter-controls" style="display: flex; gap: 8px;">
+            <input type="date" id="dateFilter" class="input-field" style="padding: 8px;" />
+            <input type="text" id="deptFilter" class="input-field" placeholder="Filter Dept" style="padding: 8px;" />
+         </div>
+         <button id="exportBtn" class="btn btn-primary mt-4" style="padding: 8px; font-size: 0.9rem;">Export CSV</button>
+      </div>
+      <div class="card list-container" style="padding: 0; overflow: hidden;">
+         <div id="logsContainer">
+             <!-- History items will be injected here -->
+         </div>
+      </div>
+    </div>
+
+  </main>
 
-  </body>
+</body>
 </html>
