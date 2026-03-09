@@ -13,7 +13,10 @@ import {
   UilCalendarAlt,
   UilSetting,
   UilHistory,
-  UilBuilding
+  UilBuilding,
+  UilWifi,
+  UilSync,
+  UilPalette
 } from '@iconscout/react-unicons';
 
 export interface Route {
@@ -198,24 +201,28 @@ export const routes: RouteItems[] = [
         name: 'General',
         icon: 'cog',
         path: '/settings/general',
+        pathName: 'settings-general',
         active: true
       },
       {
         name: 'Connectivity',
         icon: 'wifi',
         path: '/settings/connectivity',
+        pathName: 'settings-connectivity',
         active: true
       },
       {
         name: 'Offline & Sync',
         icon: 'sync',
         path: '/settings/offline',
+        pathName: 'settings-offline',
         active: true
       },
       {
         name: 'Interface',
         icon: 'palette',
         path: '/settings/interface',
+        pathName: 'settings-interface',
         active: true
       }
     ]

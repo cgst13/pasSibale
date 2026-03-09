@@ -268,41 +268,13 @@ const routes: RouteObject[] = [
             children: [
               {
                 index: true,
-                element: (
-                  <Suspense key="settings-general" fallback={<PasSibaleLoader />}>
-                    <Settings section="general" />
-                  </Suspense>
-                )
+                element: <Navigate to="general" replace />
               },
               {
-                path: 'general',
+                path: ':section',
                 element: (
-                  <Suspense key="settings-general-path" fallback={<PasSibaleLoader />}>
-                    <Settings section="general" />
-                  </Suspense>
-                )
-              },
-              {
-                path: 'connectivity',
-                element: (
-                  <Suspense key="settings-connectivity" fallback={<PasSibaleLoader />}>
-                    <Settings section="connectivity" />
-                  </Suspense>
-                )
-              },
-              {
-                path: 'offline',
-                element: (
-                  <Suspense key="settings-offline" fallback={<PasSibaleLoader />}>
-                    <Settings section="offline" />
-                  </Suspense>
-                )
-              },
-              {
-                path: 'interface',
-                element: (
-                  <Suspense key="settings-interface" fallback={<PasSibaleLoader />}>
-                    <Settings section="interface" />
+                  <Suspense key="settings-section" fallback={<PasSibaleLoader />}>
+                    <Settings />
                   </Suspense>
                 )
               }

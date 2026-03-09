@@ -24,12 +24,22 @@ import { RESET } from 'reducers/ConfigReducer';
 import PageBreadcrumb from 'components/common/PageBreadcrumb';
 import { ProgressBar } from 'react-bootstrap';
 
+import { useNavigate, useParams } from 'react-router';
+
 interface SettingsProps {
   section?: 'general' | 'connectivity' | 'offline' | 'interface';
 }
 
-const Settings = ({ section = 'general' }: SettingsProps) => {
-  const activeTab = section;
+const Settings = ({ section }: SettingsProps) => {
+  const { section: urlSection } = useParams<{ section: string }>();
+  const navigate = useNavigate();
+  const activeTab = urlSection || section || 'general';
+
+  const handleTabSelect = (key: string | null) => {
+    if (key) {
+      navigate(`/settings/${key}`);
+    }
+  };
 
   const { 
     isOfflineMode, 
@@ -185,8 +195,38 @@ const Settings = ({ section = 'general' }: SettingsProps) => {
         </Modal.Body>
       </Modal>
 
-      <Tab.Container activeKey={activeTab}>
+      <Tab.Container activeKey={activeTab} onSelect={handleTabSelect}>
         <div className="animate-fade-in">
+          <Row className="mb-4">
+            <Col md={12}>
+              <Nav variant="pills" className="flex-row gap-2 border-bottom pb-3 overflow-auto flex-nowrap">
+                <Nav.Item>
+                  <Nav.Link eventKey="general" className="px-4 py-2 fs-9 fw-bold">
+                    <FontAwesomeIcon icon={faCog} className="me-2" />
+                    GENERAL
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="connectivity" className="px-4 py-2 fs-9 fw-bold">
+                    <FontAwesomeIcon icon={faWifi} className="me-2" />
+                    CONNECTIVITY
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="offline" className="px-4 py-2 fs-9 fw-bold">
+                    <FontAwesomeIcon icon={faSync} className="me-2" />
+                    OFFLINE & SYNC
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="interface" className="px-4 py-2 fs-9 fw-bold">
+                    <FontAwesomeIcon icon={faPalette} className="me-2" />
+                    INTERFACE
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+          </Row>
           <Tab.Content>
             {/* GENERAL TAB */}
             <Tab.Pane eventKey="general">
