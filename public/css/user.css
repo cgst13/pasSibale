@@ -5,3 +5,41 @@
 /*                                Phoenix button                              */
 /* -------------------------------------------------------------------------- */
 /* prettier-ignore */
+
+/*-----------------------------------------------
+|   Avatar
+-----------------------------------------------*/
+.avatar { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  overflow: hidden; 
+  position: relative; 
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.avatar img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover !important; 
+  display: block; 
+}
+.avatar-name { 
+  width: 100%; 
+  height: 100%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+/* Avatar Sizes */
+.avatar-xs { width: 1.5rem !important; height: 1.5rem !important; }
+.avatar-s  { width: 1.875rem !important; height: 1.875rem !important; }
+.avatar-m  { width: 2.25rem !important; height: 2.25rem !important; }
+.avatar-l  { width: 2.875rem !important; height: 2.875rem !important; }
+.avatar-xl { width: 3.5rem !important; height: 3.5rem !important; }
+.avatar-2xl { width: 4.5rem !important; height: 4.5rem !important; }
+.avatar-3xl { width: 5.5rem !important; height: 5.5rem !important; }
+.avatar-4xl { width: 6.5rem !important; height: 6.5rem !important; }
+.avatar-5xl { width: 8.75rem !important; height: 8.75rem !important; }

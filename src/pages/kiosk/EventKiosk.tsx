@@ -730,8 +730,6 @@ const EventKiosk = () => {
         .success-check-container { position: relative; width: 180px; height: 180px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
         .success-check-bg { position: absolute; width: 100%; height: 100%; background: var(--phoenix-success-subtle); border-radius: 50%; animation: success-grow 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes success-grow { from { transform: scale(0); } to { transform: scale(1.5); } }
-
-        .avatar-5xl { width: 140px; height: 140px; }
       `}</style>
     </div>
   );
