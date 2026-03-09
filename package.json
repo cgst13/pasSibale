@@ -3,7 +3,6 @@
   "version": "2.2.0",
   "private": true,
   "type": "module",
-  "homepage": "https://cgst13.github.io/pasSibale",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
