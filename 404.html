@@ -67,16 +67,7 @@
         }
     </style>
     <script>
-        // SPA Redirect Logic
-        const path = window.location.pathname;
-        const search = window.location.search;
-        const hash = window.location.hash;
-        const redirectUrl = path + search + hash;
-        
-        // We show the UI for a brief moment then redirect
-        setTimeout(() => {
-            window.location.replace('/index.html?redirect_url=' + encodeURIComponent(redirectUrl));
-        }, 1500);
+        // No redirect
     </script>
 </head>
 <body>
