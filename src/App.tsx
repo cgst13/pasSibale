@@ -14,13 +14,10 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const redirect = sessionStorage.getItem('redirect');
-    sessionStorage.removeItem('redirect');
-    if (redirect && redirect !== location.href) {
-      const url = new URL(redirect);
-      if (url.pathname !== '/') {
-        navigate(url.pathname, { replace: true });
-      }
+    const params = new URLSearchParams(location.search);
+    const redirect = params.get('redirect_url');
+    if (redirect) {
+      navigate(redirect, { replace: true });
     }
   }, [navigate]);
 
@@ -33,7 +30,6 @@ const App = () => {
     config: { theme, isRTL }
   } = useAppContext();
 
-  // Automatically scrolls to top whenever pathname changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);

@@ -27,7 +27,7 @@ export default ({ mode }) => {
   const localIp = getLocalIp();
 
   return defineConfig({
-    base: env.VITE_BASENAME || '/',
+    base: '/',
     define: {
       '__LOCAL_IP__': JSON.stringify(localIp)
     },

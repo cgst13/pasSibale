@@ -34,13 +34,13 @@ const useToggleStyle = () => {
     // Create new theme link
     const themeLink = document.createElement('link');
     themeLink.rel = 'stylesheet';
-    themeLink.href = `${publicUrl}css/theme${isRTL ? '.rtl' : ''}.css`;
+    themeLink.href = `/css/theme${isRTL ? '.rtl' : ''}.css`;
     themeLink.className = 'theme-stylesheet';
 
     // Create new user link
     const userLink = document.createElement('link');
     userLink.rel = 'stylesheet';
-    userLink.href = `${publicUrl}css/user${isRTL ? '.rtl' : ''}.css`;
+    userLink.href = `/css/user${isRTL ? '.rtl' : ''}.css`;
     userLink.className = 'theme-stylesheet';
 
     // Append both to head but don’t remove old until both load

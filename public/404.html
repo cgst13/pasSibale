@@ -4,9 +4,12 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      sessionStorage.redirect = location.href;
+      var path = window.location.pathname;
+      var search = window.location.search;
+      var hash = window.location.hash;
+      var redirectUrl = path + search + hash;
+      window.location.replace('/index.html?redirect_url=' + encodeURIComponent(redirectUrl));
     </script>
-    <meta http-equiv="refresh" content="0;URL='/index.html?redirect_url=' + encodeURIComponent(location.pathname + location.search + location.hash) + ''"></meta>
   </head>
   <body>
     <p>If you are not redirected automatically, follow this <a href='/'>link</a>.</p>
