@@ -12,6 +12,17 @@ const App = () => {
   const { isStylesheetLoaded } = useToggleStyle();
   const { pathname } = useLocation();
 
+  useEffect(() => {
+    const redirect = sessionStorage.getItem('redirect');
+    sessionStorage.removeItem('redirect');
+    if (redirect && redirect !== location.href) {
+      const url = new URL(redirect);
+      if (url.pathname !== '/') {
+        window.history.replaceState(null, '', url.pathname);
+      }
+    }
+  }, []);
+
   const {
     settingsPanelConfig: { showSettingPanelButton },
     setSettingsPanelConfig
