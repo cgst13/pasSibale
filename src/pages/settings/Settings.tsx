@@ -98,6 +98,18 @@ const Settings = ({ section = 'general' }: SettingsProps) => {
     }
   };
 
+  const [showSyncAuthModal, setShowSyncAuthModal] = useState(false);
+  const [syncAuthPassword, setSyncAuthPassword] = useState('');
+
+  const handleSync = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!syncAuthPassword) return;
+
+    await syncData(syncAuthPassword);
+    setShowSyncAuthModal(false);
+    setSyncAuthPassword('');
+  };
+
   const breadcrumbItems = [
     { label: 'Settings', active: false },
     { label: activeTab.charAt(0).toUpperCase() + activeTab.slice(1), active: true }
@@ -142,6 +154,36 @@ const Settings = ({ section = 'general' }: SettingsProps) => {
         <h2 className="mb-2">Settings</h2>
         <p className="text-body-secondary">Manage your application preferences and device connectivity.</p>
       </div>
+
+      {/* Sync Auth Modal */}
+      <Modal show={showSyncAuthModal} onHide={() => setShowSyncAuthModal(false)} centered backdrop="static">
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bolder">Verify Identity</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="py-4">
+          <p className="text-body-secondary mb-4">
+            Please enter your password to authorize the data synchronization.
+          </p>
+          <Form onSubmit={handleSync}>
+            <Form.Group className="mb-3">
+              <Form.Label className="fw-bold fs-10 text-uppercase">Your Password</Form.Label>
+              <Form.Control 
+                type="password" 
+                value={syncAuthPassword} 
+                onChange={(e) => setSyncAuthPassword(e.target.value)}
+                placeholder="••••••••"
+                className="form-control-lg border-2"
+                autoFocus
+              />
+            </Form.Group>
+            <div className="d-grid mt-4">
+              <Button variant="primary" type="submit" size="lg" className="fw-bold py-3 shadow-sm" disabled={!syncAuthPassword || isSyncing}>
+                {isSyncing ? 'SYNCING...' : 'VERIFY & SYNC'}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
       <Tab.Container activeKey={activeTab}>
         <div className="animate-fade-in">
@@ -208,35 +250,21 @@ const Settings = ({ section = 'general' }: SettingsProps) => {
                         </Col>
                         <Col lg={5} className="text-lg-end">
                           <div className="d-flex flex-column gap-2 align-items-lg-end">
-                            {!isDownloading ? (
-                              <Button 
-                                variant={isOfflineMode ? "outline-primary" : "primary"}
-                                onClick={() => handleToggleOffline()}
-                                className="fw-bold px-4 py-2"
-                                disabled={isDownloading}
-                              >
-                                <FontAwesomeIcon icon={isOfflineMode ? faCloudUploadAlt : faCloudDownloadAlt} className="me-2" />
-                                {isOfflineMode ? 'SWITCH TO ONLINE MODE' : 'GO OFFLINE'}
-                              </Button>
-                            ) : (
-                              <div className="w-100" style={{ maxWidth: '300px' }}>
-                                <div className="d-flex justify-content-between mb-2">
-                                  <span className="fs-10 fw-bold text-primary">PREPARING DATA...</span>
-                                  <span className="fs-10 fw-bold text-primary">{downloadProgress}%</span>
-                                </div>
-                                <ProgressBar now={downloadProgress} className="mb-0" style={{ height: '8px' }} />
-                              </div>
-                            )}
+                            <Button 
+                              variant="primary"
+                              onClick={() => setShowSyncAuthModal(true)}
+                              className="fw-bold px-4 py-2"
+                              disabled={isDownloading || isSyncing}
+                            >
+                              <FontAwesomeIcon icon={faSync} className="me-2" />
+                              SYNC DATA
+                            </Button>
                             
                             {pendingSyncCount > 0 && (
-                              <Button 
-                                variant="link" 
-                                className="text-warning p-0 fs-10 fw-bolder text-decoration-none"
-                                onClick={syncData}
-                              >
+                              <div className="text-warning p-0 fs-10 fw-bolder">
                                 <FontAwesomeIcon icon={faExclamationCircle} className="me-1" />
-                                {pendingSyncCount} PENDING CHANGES TO SYNC
-                              </Button>
+                                {pendingSyncCount} PENDING CHANGES
+                              </div>
                             )}
                           </div>
                         </Col>

@@ -36,6 +36,8 @@ export const OfflineModeProvider = ({ children }: { children: ReactNode }) => {
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [tableSummary, setTableSummary] = useState<TableSummary[]>([]);
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('isOfflineMode', isOfflineMode.toString());
     updatePendingCount();
@@ -84,171 +86,151 @@ export const OfflineModeProvider = ({ children }: { children: ReactNode }) => {
         toast.error('Password is required to verify your identity before going offline');
         return;
       }
-
-      setIsDownloading(true);
-      setDownloadProgress(0);
-      try {
-        const isOnline = await checkConnectivity();
-        if (!isOnline) {
-          throw new Error('Internet connection required to download data for offline use.');
-        }
-
-        // Verify identity first
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user?.email) throw new Error('Not logged in');
-
-        const { error: authError } = await supabase.auth.signInWithPassword({
-          email: user.email,
-          password: password
-        });
-
-        if (authError) throw new Error('Incorrect password');
-
-        // Comprehensive Data Download
-        const tables = [
-          { name: 'citizens', db: db.citizens, label: 'Citizens' },
-          { name: 'departments', db: db.departments, label: 'Departments' },
-          { name: 'department_services', db: db.departmentServices, label: 'Services' },
-          { name: 'events', db: db.events, label: 'Events' },
-          { name: 'event_attendance', db: db.eventAttendance, label: 'Attendance' },
-          { name: 'program_definitions', db: db.programs, label: 'Programs' },
-          { name: 'program_enrollments', db: db.programRegistrations, label: 'Registrations' },
-          { name: 'audit_logs', db: db.auditLogs, label: 'Audit Logs' },
-          { name: 'citizen_activities', db: db.citizenActivities, label: 'Activities' },
-          { name: 'profiles', db: db.profiles, label: 'Profiles' }
-        ];
-
-        for (let i = 0; i < tables.length; i++) {
-          const table = tables[i];
-          const progress = Math.round((i / tables.length) * 90);
-          setDownloadProgress(progress);
-          
-          try {
-            const { data, error } = await supabase.from(table.name).select('*');
-            if (error) {
-              console.warn(`Could not download ${table.label}:`, error.message);
-              continue; // Skip optional tables if they fail (e.g. 404 or RLS)
-            }
-            
-            await table.db.clear();
-            if (data && data.length > 0) {
-              await table.db.bulkAdd(data);
-            }
-          } catch (e) {
-            console.warn(`Error processing table ${table.label}:`, e);
-          }
-        }
-
-        // Auth Cache
-        setDownloadProgress(95);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile) {
-          const salt = bcrypt.genSaltSync(10);
-          const passwordHash = bcrypt.hashSync(password, salt);
-
-          await db.authCache.clear();
-          await db.authCache.put({
-            id: user.id,
-            email: user.email!,
-            passwordHash: passwordHash,
-            role: profile.role || 'admin',
-            profile: profile
-          });
-        }
-
-        setDownloadProgress(100);
-        setIsOfflineMode(true);
-        await refreshTableSummary();
-        toast.success('System is now fully ready for total offline operation');
-      } catch (error: any) {
-        console.error('Download failed:', error);
-        toast.error(error.message || 'Failed to prepare offline data');
-      } finally {
-        setIsDownloading(false);
-      }
+      // Just set the mode, sync will handle the data
+      setIsOfflineMode(true);
+      toast.success('System is now in Offline Mode');
     } else {
-      const isOnline = await checkConnectivity();
-      if (!isOnline) {
-        toast.error('Cannot switch to Online Mode without an internet connection.');
-        return;
-      }
-      
       setIsOfflineMode(false);
       toast.success('System is back Online');
-      syncData();
     }
   };
 
-  const syncData = async () => {
-    const queue = await db.syncQueue.toArray();
-    if (queue.length === 0) return;
-
-    toast.loading(`Syncing ${queue.length} pending changes...`, { id: 'syncing' });
-    
-    let successCount = 0;
-    for (const item of queue) {
-      try {
-        if (item.type === 'CITIZEN_ACTIVITY') {
-          if (item.action === 'INSERT') {
-            await supabase.from('citizen_activities').insert([item.payload]);
-          } else if (item.action === 'UPDATE') {
-            await supabase.from('citizen_activities').update(item.payload).eq('id', item.payload.id);
-          }
-        } else if (item.type === 'EVENT_ATTENDANCE') {
-          await supabase.from('event_attendance').upsert(item.payload, { onConflict: 'event_id, citizen_id' });
-        } else if (item.type === 'CITIZEN_UPDATE') {
-          if (item.action === 'INSERT') {
-            await supabase.from('citizens').insert([item.payload]);
-          } else if (item.action === 'UPDATE') {
-            await supabase.from('citizens').update(item.payload).eq('id', item.payload.id);
-          } else if (item.action === 'DELETE') {
-            await supabase.from('citizens').delete().eq('id', item.payload.id);
-          }
-        } else if (item.type === ('PROGRAM_UPDATE' as any)) {
-          if (item.action === 'INSERT') {
-            await supabase.from('program_definitions').insert([item.payload]);
-          } else if (item.action === 'UPDATE') {
-            await supabase.from('program_definitions').update(item.payload).eq('id', item.payload.id);
-          } else if (item.action === 'DELETE') {
-            await supabase.from('program_definitions').delete().eq('id', item.payload.id);
-          }
-        } else if (item.type === ('PROGRAM_ENROLLMENT' as any)) {
-          if (item.action === 'INSERT') {
-            await supabase.from('program_enrollments').insert([item.payload]);
-          } else if (item.action === 'DELETE') {
-            await supabase.from('program_enrollments').delete().eq('id', item.payload.id);
-          }
-        } else if (item.type === ('AUDIT_LOG' as any)) {
-          await supabase.from('audit_logs').insert([item.payload]);
-        } else if (item.type === ('SERVICE_UPDATE' as any)) {
-          if (item.action === 'INSERT') {
-            await supabase.from('department_services').insert([item.payload]);
-          } else if (item.action === 'UPDATE') {
-            await supabase.from('department_services').update(item.payload).eq('id', item.payload.id);
-          } else if (item.action === 'DELETE') {
-            await supabase.from('department_services').delete().eq('id', item.payload.id);
-          }
-        }
-        
-        await db.syncQueue.delete(item.id!);
-        successCount++;
-      } catch (error) {
-        console.error('Sync item failed:', error);
-      }
+  const syncData = async (password: string) => {
+    if (!password) {
+      toast.error('Password is required to sync data');
+      return;
     }
 
-    updatePendingCount();
-    await refreshTableSummary();
-    toast.dismiss('syncing');
-    if (successCount === queue.length) {
-      toast.success('All data synced successfully');
-    } else if (successCount > 0) {
-      toast.warning(`Synced ${successCount} items. ${queue.length - successCount} failed.`);
+    setIsSyncing(true);
+    toast.loading('Starting data synchronization...', { id: 'syncing' });
+
+    try {
+      // Step 1: Verify password
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error('Not logged in');
+
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: password
+      });
+
+      if (authError) throw new Error('Incorrect password');
+
+      // Step 2: Upload local changes
+      const queue = await db.syncQueue.toArray();
+      if (queue.length > 0) {
+        toast.loading(`Uploading ${queue.length} local changes...`, { id: 'syncing' });
+        let successCount = 0;
+        for (const item of queue) {
+          try {
+            if (item.type === 'CITIZEN_ACTIVITY') {
+              if (item.action === 'INSERT') {
+                await supabase.from('citizen_activities').insert([item.payload]);
+              } else if (item.action === 'UPDATE') {
+                await supabase.from('citizen_activities').update(item.payload).eq('id', item.payload.id);
+              }
+            } else if (item.type === 'EVENT_ATTENDANCE') {
+              await supabase.from('event_attendance').upsert(item.payload, { onConflict: 'event_id, citizen_id' });
+            } else if (item.type === 'CITIZEN_UPDATE') {
+              if (item.action === 'INSERT') {
+                await supabase.from('citizens').insert([item.payload]);
+              } else if (item.action === 'UPDATE') {
+                await supabase.from('citizens').update(item.payload).eq('id', item.payload.id);
+              } else if (item.action === 'DELETE') {
+                await supabase.from('citizens').delete().eq('id', item.payload.id);
+              }
+            } else if (item.type === ('PROGRAM_UPDATE' as any)) {
+              if (item.action === 'INSERT') {
+                await supabase.from('program_definitions').insert([item.payload]);
+              } else if (item.action === 'UPDATE') {
+                await supabase.from('program_definitions').update(item.payload).eq('id', item.payload.id);
+              } else if (item.action === 'DELETE') {
+                await supabase.from('program_definitions').delete().eq('id', item.payload.id);
+              }
+            } else if (item.type === ('PROGRAM_ENROLLMENT' as any)) {
+              if (item.action === 'INSERT') {
+                await supabase.from('program_enrollments').insert([item.payload]);
+              } else if (item.action === 'DELETE') {
+                await supabase.from('program_enrollments').delete().eq('id', item.payload.id);
+              }
+            } else if (item.type === ('AUDIT_LOG' as any)) {
+              await supabase.from('audit_logs').insert([item.payload]);
+            } else if (item.type === ('SERVICE_UPDATE' as any)) {
+              if (item.action === 'INSERT') {
+                await supabase.from('department_services').insert([item.payload]);
+              } else if (item.action === 'UPDATE') {
+                await supabase.from('department_services').update(item.payload).eq('id', item.payload.id);
+              } else if (item.action === 'DELETE') {
+                await supabase.from('department_services').delete().eq('id', item.payload.id);
+              }
+            }
+            
+            await db.syncQueue.delete(item.id!);
+            successCount++;
+          } catch (error) {
+            console.error('Sync item failed:', error);
+          }
+        }
+        if (successCount === queue.length) {
+          toast.success('Local changes uploaded successfully');
+        } else {
+          toast.warning(`Uploaded ${successCount} of ${queue.length} changes. Some failed.`);
+        }
+      }
+
+      // Step 3: Download latest data
+      toast.loading('Downloading latest data from cloud...', { id: 'syncing' });
+      const tables = [
+        { name: 'citizens', db: db.citizens, label: 'Citizens' },
+        { name: 'departments', db: db.departments, label: 'Departments' },
+        { name: 'department_services', db: db.departmentServices, label: 'Services' },
+        { name: 'events', db: db.events, label: 'Events' },
+        { name: 'event_attendance', db: db.eventAttendance, label: 'Attendance' },
+        { name: 'program_definitions', db: db.programs, label: 'Programs' },
+        { name: 'program_enrollments', db: db.programRegistrations, label: 'Registrations' },
+        { name: 'audit_logs', db: db.auditLogs, label: 'Audit Logs' },
+        { name: 'citizen_activities', db: db.citizenActivities, label: 'Activities' },
+        { name: 'profiles', db: db.profiles, label: 'Profiles' }
+      ];
+
+      for (const table of tables) {
+        try {
+          const { data, error } = await supabase.from(table.name).select('*');
+          if (error) throw error;
+          await table.db.clear();
+          if (data && data.length > 0) {
+            await table.db.bulkAdd(data);
+          }
+        } catch (e) {
+          console.warn(`Could not download ${table.label}:`, e);
+        }
+      }
+
+      // Step 4: Cache Auth
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if (profile) {
+        const salt = bcrypt.genSaltSync(10);
+        const passwordHash = bcrypt.hashSync(password, salt);
+        await db.authCache.clear();
+        await db.authCache.put({
+          id: user.id,
+          email: user.email!,
+          passwordHash: passwordHash,
+          role: profile.role || 'admin',
+          profile: profile
+        });
+      }
+
+      await refreshTableSummary();
+      await updatePendingCount();
+      toast.success('Synchronization complete!');
+
+    } catch (error: any) {
+      console.error('Sync failed:', error);
+      toast.error(error.message || 'Synchronization failed');
+    } finally {
+      setIsSyncing(false);
+      toast.dismiss('syncing');
     }
   };
 
@@ -270,7 +252,8 @@ export const OfflineModeProvider = ({ children }: { children: ReactNode }) => {
       tableSummary,
       toggleOfflineMode,
       syncData,
-      refreshTableSummary
+      refreshTableSummary,
+      isSyncing
     }}>
       {children}
     </OfflineModeContext.Provider>
