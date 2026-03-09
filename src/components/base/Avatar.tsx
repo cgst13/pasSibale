@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import avatar from 'assets/img/team/40x40/avatar.webp';
+import avatar from '../../assets/img/team/40x40/avatar.webp';
 import { Children, PropsWithChildren } from 'react';
 
 export type Size = '5xl' | '4xl' | '3xl' | '2xl' | 'xl' | 'l' | 'm' | 's';

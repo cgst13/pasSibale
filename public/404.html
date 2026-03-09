@@ -6,7 +6,7 @@
     <script>
       sessionStorage.redirect = location.href;
     </script>
-    <meta http-equiv="refresh" content="0;URL='/'"></meta>
+    <meta http-equiv="refresh" content="0;URL='/index.html?redirect_url=' + encodeURIComponent(location.pathname + location.search + location.hash) + ''"></meta>
   </head>
   <body>
     <p>If you are not redirected automatically, follow this <a href='/'>link</a>.</p>

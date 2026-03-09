@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'components/base/Button';
 import AuthSocialButtons from 'components/common/AuthSocialButtons';
 import { Col, Form, Row, Alert, Spinner } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { useState, useEffect } from 'react';
 import { supabase } from 'supabaseClient';
 import toast from 'react-hot-toast';
@@ -17,16 +17,22 @@ interface SignInFormProps {
 
 const SignInForm = ({ layout = 'simple' }: SignInFormProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { isOfflineMode } = useOfflineMode();
 
+  const getRedirectUrl = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('redirect_url') || '/';
+  };
+
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate(getRedirectUrl());
       }
     };
     checkSession();
@@ -40,25 +46,27 @@ const SignInForm = ({ layout = 'simple' }: SignInFormProps) => {
       if (isOfflineMode) {
         // Offline Login Logic
         const cachedUser = await db.authCache.where('email').equals(email).first();
-        
+
         if (cachedUser && bcrypt.compareSync(password, cachedUser.passwordHash)) {
           toast.success('Offline Login Successful');
-          navigate('/', { replace: true });
+          navigate(getRedirectUrl(), { replace: true });
         } else {
-          toast.error('Invalid credentials in offline mode. Please verify your password or connect to the internet.');
+          toast.error(
+            'Invalid credentials in offline mode. Please verify your password or connect to the internet.'
+          );
         }
       } else {
         // Online Login Logic
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password,
+          password
         });
 
         if (error) {
           toast.error(error.message);
         } else if (data.user) {
           toast.success('Logged in successfully');
-          navigate('/', { replace: true });
+          navigate(getRedirectUrl(), { replace: true });
         }
       }
     } catch (error: any) {
