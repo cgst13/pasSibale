@@ -1,0 +1,109 @@
+/* -------------------------------------------------------------------------- */
+/*                            React Dropzone                                  */
+/* -------------------------------------------------------------------------- */
+
+.dropzone {
+  border: 1px dashed var(--#{$prefix}border-color-translucent);
+  padding: map-get($spacers, 7) map-get($spacers, 5);
+  border-radius: $border-radius;
+  // height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  &.dropzone-sm {
+    padding: map-get($spacers, 4);
+  }
+  .dz-message {
+    position: relative;
+    background-color: var(--#{$prefix}body-bg);
+    padding: 5rem 2rem;
+    margin: 0;
+    border: 2px dashed var(--#{$prefix}border-color-translucent);
+    border-radius: $border-radius-lg;
+  }
+  &.dropzone-multiple {
+    .dz-message {
+      padding: 3rem 2rem;
+      border: 1px dashed var(--#{$prefix}border-color);
+      border-radius: $border-radius-lg;
+    }
+    .btn * {
+      cursor: pointer;
+    }
+    .media:first-child {
+      margin-top: map-get($spacers, 4);
+    }
+    .dz-image-container {
+      padding: 1rem;
+    }
+    .dz-image {
+      height: 2rem;
+      width: 2rem;
+      object-fit: cover;
+      border-radius: 0;
+      // margin-right: 0.5rem;
+    }
+    .dz-progress {
+      opacity: 0;
+      position: relative !important;
+      transition: opacity 0.4s ease-in;
+      animation: none !important;
+      width: 6.25rem !important;
+      height: map_get($spacers, 2) !important;
+      margin-top: 0;
+      margin-left: map_get($spacers, 3) !important;
+      transform: none !important;
+      top: auto !important;
+      left: auto !important;
+    }
+    .dz-complete {
+      .dz-progress {
+        transition-delay: 1s;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+.image-attachment-preview {
+  height: 120px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: cover;
+  border: 1px solid var(--#{$prefix}gray-200);
+  border-radius: 8px;
+  position: relative;
+  // overflow: hidden;
+  .support-chat & {
+    height: 50px;
+    width: 50px;
+  }
+  img {
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+  }
+  .close-btn {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    padding: 0;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--#{$prefix}tertiary-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  @include media-breakpoint-up(sm){
+    height: 140px;
+    width: 200px;
+  }
+}
+
