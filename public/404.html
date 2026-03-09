@@ -1,17 +1,94 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
     <meta charset="utf-8">
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Missing! | PasSibale</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f9fafd;
+            color: #31374a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 600px;
+        }
+        .error-code {
+            font-size: 150px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+            color: #3874ff;
+            opacity: 0.8;
+            letter-spacing: -5px;
+        }
+        h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #31374a;
+        }
+        p {
+            font-size: 1.1rem;
+            color: #525b75;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #3874ff;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #2b5cd9;
+        }
+        .loader-dots {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #9da9bb;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+        }
+    </style>
     <script>
-      const path = window.location.pathname;
-      const search = window.location.search;
-      const hash = window.location.hash;
-      const redirectUrl = path + search + hash;
-      window.location.replace(`/index.html?redirect_url=${encodeURIComponent(redirectUrl)}`);
+        // SPA Redirect Logic
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+        const redirectUrl = path + search + hash;
+        
+        // We show the UI for a brief moment then redirect
+        setTimeout(() => {
+            window.location.replace('/index.html?redirect_url=' + encodeURIComponent(redirectUrl));
+        }, 1500);
     </script>
-  </head>
-  <body>
-    <p>If you are not redirected automatically, follow this <a href='/'>link</a>.</p>
-  </body>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">404</div>
+        <h2>Page Missing!</h2>
+        <p>
+            But no worries! Our ostrich is looking everywhere<br>
+            while you wait safely.
+        </p>
+        <a href="/" class="btn">Go Home</a>
+        <div class="loader-dots">Redirecting...</div>
+    </div>
+</body>
 </html>
