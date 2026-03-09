@@ -6,11 +6,12 @@ import { useSettingsPanelContext } from 'providers/SettingsPanelProvider';
 import { KioskModeProvider } from 'providers/KioskModeProvider';
 import { OfflineModeProvider } from 'providers/OfflineModeProvider';
 import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 
 const App = () => {
   const { isStylesheetLoaded } = useToggleStyle();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const redirect = sessionStorage.getItem('redirect');
@@ -18,10 +19,10 @@ const App = () => {
     if (redirect && redirect !== location.href) {
       const url = new URL(redirect);
       if (url.pathname !== '/') {
-        window.history.replaceState(null, '', url.pathname);
+        navigate(url.pathname, { replace: true });
       }
     }
-  }, []);
+  }, [navigate]);
 
   const {
     settingsPanelConfig: { showSettingPanelButton },
