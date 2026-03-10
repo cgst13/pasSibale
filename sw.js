@@ -1,11 +1,11 @@
-const CACHE_NAME = 'passibale-cache-v1';
+const CACHE_NAME = 'passibale-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.ico',
-  '/assets/css/theme.css',
-  '/assets/css/user.css'
+  '/css/theme.css',
+  '/css/user.css'
 ];
 
 // Install Event - Cache Static Assets
@@ -13,7 +13,10 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Service Worker: Caching Static Assets');
-      return cache.addAll(STATIC_ASSETS);
+      return cache.addAll(STATIC_ASSETS).catch(() => {
+        // If any single asset 404s, addAll rejects and the whole SW install fails.
+        // Keep the SW install resilient by not failing the entire install.
+      });
     })
   );
   self.skipWaiting();
@@ -44,8 +47,7 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname.includes('supabase.co')) {
     event.respondWith(
       fetch(event.request).catch(() => {
-        // Return a custom offline response or nothing
-        // The app handles offline data via IndexedDB, so we just let fetch fail gracefully
+        // Return a minimal offline response
         return new Response(JSON.stringify({ error: 'offline' }), {
           headers: { 'Content-Type': 'application/json' }
         });

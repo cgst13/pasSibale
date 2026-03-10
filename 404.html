@@ -67,7 +67,18 @@
         }
     </style>
     <script>
-        // No redirect
+        // SPA fallback for static hosts:
+        // If the host serves this 404 page for deep links, redirect back to `/`
+        // and pass the original path as a query param that the app already handles.
+        (function () {
+            var pathname = window.location.pathname || '/';
+            var search = window.location.search || '';
+            var hash = window.location.hash || '';
+            var target = '/?redirect_url=' + encodeURIComponent(pathname + search + hash);
+            if (pathname !== '/' && !search.includes('redirect_url=')) {
+                window.location.replace(target);
+            }
+        })();
     </script>
 </head>
 <body>
